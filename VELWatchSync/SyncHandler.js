@@ -198,15 +198,14 @@ var WebBluetooth = {
                 if(sendToServer){
                     connection.close();
                     const currentDate = new Date();
-                    const xhr = new XMLHttpRequest();
-                    console.log("Sending data to server")
-                    var link = "https://bbs.ugavel.com/sync?from_time=" + currentDate.getTime() + "&station_id=" + station_id + "&device_id=" + mac_id + "&app_name=hrv_test&app_version=v6&complete=1";
-                    xhr.open("POST", link);
-                    xhr.setRequestHeader("Content-Type", "application/octet-stream");
-                    const body = JSON.stringify({
+                    fetch("https://bbs.ugavel.com/sync?from_time=" + currentDate.getTime() + "&station_id=" + station_id + "&device_id=" + mac_id + "&app_name=hrv_test&app_version=v6&complete=1", {
+                    method: "POST",
+                    body: JSON.stringify({
                         buffer
-                    });
-                    xhr.send(body);
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }})
                     sendToServer = false;
                 }else{
                     if(counter < 10){
@@ -235,8 +234,7 @@ var WebBluetooth = {
             connection.isOpen = true;
             connection.isOpening = false;
             isBusy = false;
-            const xhr = new XMLHttpRequest();
-            fetch("https://jsonplaceholder.typicode.com/todos", {
+            fetch("https://bbs.ugavel.com/discoverable?", {
             method: "POST",
             body: JSON.stringify({
                 name: "Velwatch",

@@ -6,50 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syncing Page</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+       body {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #ecf0f1; /* Light background color for the page */
         }
 
-        header {
+        .footer {
+            background-color: #3498db; /* Blue color */
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
             text-align: center;
-            margin-bottom: 20px;
         }
 
-        #syncButton {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: #4285f4;
+        .buttons-container {
+            display: flex;
+            justify-content: space-between; /* Space buttons across the whole page */
+            margin-top: 10px;
+        }
+
+        .button {
+            padding: 15px 30px; /* Increase button size */
+            background-color: #2c3e50; /* Darker blue for buttons */
             color: #fff;
+            text-decoration: none;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            margin-right: 10px;
         }
 
-        #syncButton:hover {
-            background-color: #3367d6;
-        }
-
-        #ugaLogo {
-            max-width: 50%; /* Adjust the percentage to make the logo smaller */
-            height: auto;
+        .uga-logo {
+            display: block;
+            margin: 20px auto; /* Center the logo horizontally */
+            max-width: 20%; /* Make the logo smaller */
         }
     </style>
 </head>
 <body>
-<header>
-    <img id="ugaLogo" src="GEORGIA.png" alt="University of Georgia Logo">
-</header>
-<div>
-    <button onclick="start()" id="syncButton">Sync Now</button>
+    <img id="uga-logo" src="GEORGIA.png" alt="University of Georgia Logo">
+<div class="footer">
+<div class="buttons-container">
+    <button onclick="start()" class="button">Sync Now</button>
+    <button class="button">Button 2</button>
+    <button class="button">Button 3</button>
+    <button class="button">Button 4</button>
+</div>
 </div>
 </body>
 </html>
