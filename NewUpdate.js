@@ -1,18 +1,27 @@
 
 //Used to convert from arraybuffer to string
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-function getIPFromAmazon() {
-    fetch("https://checkip.amazonaws.com/",{mode: 'no-cors'}).then(res => res.text()).then(data => {station_id = data})
-}
 
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
+
+const fileInput = document.getElementById('Update');
+
+fileInput.addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileContent = e.target.result;
+  };
+  reader.readAsText(file);
+});
+
 var fromTime;
 var buffer = [];
 var mac_id = "c8:6c:ec:ca:0c:6a";
 var station_id = "c8:6c:ec:ca:0c:6a";
-var sendToServer = false;
+var updateReady = false;
 //Used to convert from string to arraybuffer
 function str2ab(str) {
     var buf = new ArrayBuffer(str.length);
@@ -30,16 +39,8 @@ if (typeof navigator == "undefined"){
 
 var isBusy = false;
 var d = new Date();
-function sendReq(){
-    fetch("https://bbs.ugavel.com/discovered?name=Velwatch&battery=50&rssi=30&station_id=" + station_id + "&mac_id" + station_id, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/x-www-form-urlencoded"
-            }
-            });
-}
 //instantiating the web bluetooth handler to take care of tx and rx communications and maintain the connection
-function start(){
+function download(){
     connection = connect(function () {
         connection.received = "";
         connection.on('data', function (d) {
@@ -175,63 +176,9 @@ var WebBluetooth = {
             console.log( "RX characteristic");
             //Will execute on the reading of a packet in order to parse it for the pause signal to stop the process
             rxCharacteristic.addEventListener('characteristicvaluechanged', function(event) {
-                console.log("Added Listen");
-                var dataview = event.target.value;
-                    for (var i=0;i<dataview.byteLength;i++) {
-                        var ch = dataview.getUint8(i);
-                        if(ch==2){
-                            console.log("finished sync");
-                            const file = JSON.stringify(dataview);
-                            buffer.push(ch);
-                            sendToServer = true;
-                        }
-                        else if(ch == 7){
-                            num1 = dataview.getUint8(i+4)
-                            num2 = dataview.getUint8(i+3)
-                            num3 = dataview.getUint8(i+2)
-                            num4 = dataview.getUint8(i+1)
-                            fromTime = num1.toString() + num2.toString() + num3.toString() + num4.toString()
-                        }
-                        else if(ch == 10){
-                            buffer.push("\n")
-                        }
-                        else{
-                            buffer.push(ch);
-                        }
-                        //connection.write(1);
-                    }
-                    
-                var str = ab2str(dataview.buffer);
-                    //send to server
-                if(sendToServer){
-                    connection.close();
-                    const currentDate = new Date();
-                    //fetch("https://bbs.ugavel.com/sync?from_time=" + currentDate.getTime() + "&station_id=" + station_id + "&device_id=" + mac_id + "&app_name=hrv_test&app_version=v6&complete=1", {
-                    //method: "POST",
-                    //body: JSON.stringify({
-                    //    buffer
-                    //}),
-                    //headers: {
-                    //    "Content-type": "application/json; charset=UTF-8"
-                    //}})
-                    fetch("https://bbs.ugavel.com/discovered?name=Velwatch&battery=50&rssi=30&station_id=" + station_id + "&mac_id" + station_id, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/x-www-form-urlencoded"
-            }
-            });
-                    sendToServer = false;
-                }else{
-                    if(counter < 10){
-                        counter += 1;
-                    }
-                    else{
-                        counter = 0;
-                        connection.write(1);    
-                    }
+                if(event.target.value.getUint8(0) == 5){
+                    updateReady = True
                 }
-                console.log(3, "Received "+JSON.stringify(str));
-                //connection.emit('data', str);
             });
             return rxCharacteristic.startNotifications();
         }).then(function() {
@@ -241,27 +188,21 @@ var WebBluetooth = {
         }).then(function (characteristic) {
             txCharacteristic = characteristic;
             console.log(2, "TX characteristic:"+JSON.stringify(txCharacteristic));
-            //Readies the connection to begin the writing process
         }).then(function() {
             console.log("setting");
             connection.txInProgress = false;
             connection.isOpen = true;
             connection.isOpening = false;
             isBusy = false;
-           // fetch("https://bbs.ugavel.com/discovered", {
-            //method: "POST",
-           // body: JSON.stringify({
-           //     name: "Velwatch",
-            //    battery: 50,
-           //     rssi: -30,
-          //      station_id: station_id,
-          //      mac_id: mac_id
-          //  }),
-          //  headers: {
-          //      "Content-type": "application/json; charset=UTF-8"
-          //  }
-         //   });
-            connection.write(1);
+            connection.write(4);
+            while(True){
+                if(updateReady){
+                    for(thing in fileContent){
+                        connection.write(thing);
+                    }
+                    break;
+                }
+            }
         }).catch(function(error) {
             console.log(1, 'ERROR: ' + error);
             connection.close();
