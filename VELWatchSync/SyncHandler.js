@@ -31,7 +31,15 @@ if (typeof navigator == "undefined"){
 var isBusy = false;
 var d = new Date();
 function sendReq(){
-    fetch("https://bbs.ugavel.com/discovered?name=Velwatch&battery=50&rssi=30&station_id=" + station_id + "&mac_id" + station_id, {
+    const bodyData = new URLSearchParams({
+        name: "VelWatch",
+        battery: 50,
+        rssi: -90,
+        station_id: station_id,
+        device_id: station_id
+    });
+    fetch("https://bbs.ugavel.com/discovered", {
+            body: bodyData,
             method: "POST",
             headers: {
                 "Content-type": "application/x-www-form-urlencoded"

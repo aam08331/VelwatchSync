@@ -1,6 +1,5 @@
 
 //Used to convert from arraybuffer to string
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
@@ -8,14 +7,14 @@ function ab2str(buf) {
 
 const fileInput = document.getElementById('Update');
 
-fileInput.addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const fileContent = e.target.result;
-  };
-  reader.readAsText(file);
-});
+//fileInput.addEventListener('change', function(event) {
+//  const file = event.target.files[0];
+//  const reader = new FileReader();
+//  reader.onload = function(e) {
+//    const fileContent = e.target.result;
+//  };
+//  reader.readAsText(file);
+//});
 
 var fromTime;
 var buffer = [];
