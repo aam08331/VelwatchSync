@@ -13,6 +13,9 @@ var buffer = [];
 var mac_id = "c8:6c:ec:ca:0c:6a";
 var station_id = "c8:6c:ec:ca:0c:6a";
 var sendToServer = false;
+var nameFound
+var batteryFound
+var rssiFound
 //Used to convert from string to arraybuffer
 function str2ab(str) {
     var buf = new ArrayBuffer(str.length);
@@ -159,9 +162,14 @@ var WebBluetooth = {
                 { namePrefix: 'VELWatch' },
                 { services: [ NORDIC_SERVICE ] }
             ], optionalServices: [ NORDIC_SERVICE ]}).then(function(device) {
-            console.log(1, 'Device Name:       ' + device.name);
-            console.log(1, 'Device ID:         ' + device.id);
-            mac_id = device.id;
+                mac_id = device.id;
+                mac_id = mac_id.toString();
+                nameFound = device.name;
+                console.log(device.advertisement)
+            console.log(1, 'Device Name:       ' + nameFound);
+            console.log(1, 'Device ID:         ' + mac_id);
+            console.log(1, 'Device battery:         ' + batteryFound);
+            console.log(1, 'Device rssi:         ' + rssiFound);
             //Calls the close function in the event of a gatt server disconnection
             device.addEventListener('gattserverdisconnected', function() {
                 console.log(1, "Disconnected (gattserverdisconnected)");
@@ -172,7 +180,7 @@ var WebBluetooth = {
         }).then(function(server) {
             console.log(1, "Connected");
             btServer = server;
-            return server.getPrimaryService(NORDIC_SERVICE);
+            return btServer.getPrimaryService(NORDIC_SERVICE);
         }).then(function(service) {
             console.log(2, "Got service");
             btService = service;
@@ -194,6 +202,7 @@ var WebBluetooth = {
                             sendToServer = true;
                         }
                         else if(ch == 7){
+                            console.log("7")
                             num1 = dataview.getUint8(i+4)
                             num2 = dataview.getUint8(i+3)
                             num3 = dataview.getUint8(i+2)
@@ -213,21 +222,20 @@ var WebBluetooth = {
                     //send to server
                 if(sendToServer){
                     connection.close();
+                    const http = new XMLHttpRequest();
                     const currentDate = new Date();
-                    //fetch("https://bbs.ugavel.com/sync?from_time=" + currentDate.getTime() + "&station_id=" + station_id + "&device_id=" + mac_id + "&app_name=hrv_test&app_version=v6&complete=1", {
-                    //method: "POST",
-                    //body: JSON.stringify({
-                    //    buffer
-                    //}),
-                    //headers: {
-                    //    "Content-type": "application/json; charset=UTF-8"
-                    //}})
-                    fetch("https://bbs.ugavel.com/discovered?name=Velwatch&battery=50&rssi=30&station_id=" + station_id + "&mac_id" + station_id, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/x-www-form-urlencoded"
-            }
-            });
+                    console.log(mac_id)
+                    from_time = currentDate.getTime();
+                    station_mac = station_id;
+                    device_mac = mac_id;
+                    app_name = "hrv_test";
+                    app_version = 6;
+                    complete = 1;
+                    sync_route = "https://bbs.ugavel.com/sync"
+                    let urlEncoded = `?from_time=${from_time}&station_id=${station_mac}&device_id=${device_mac}&app_name=${app_name}&app_version=${app_version}&complete=${complete ? '1' : '0'}`;
+                    http.open('POST', sync_route + urlEncoded);
+                    http.setRequestHeader('Content-Type', 'application/octet-stream');
+                    http.send(buffer, 0);
                     sendToServer = false;
                 }else{
                     if(counter < 10){
@@ -256,19 +264,29 @@ var WebBluetooth = {
             connection.isOpen = true;
             connection.isOpening = false;
             isBusy = false;
-           // fetch("https://bbs.ugavel.com/discovered", {
-            //method: "POST",
-           // body: JSON.stringify({
-           //     name: "Velwatch",
-            //    battery: 50,
-           //     rssi: -30,
-          //      station_id: station_id,
-          //      mac_id: mac_id
-          //  }),
-          //  headers: {
-          //      "Content-type": "application/json; charset=UTF-8"
-          //  }
-         //   });
+            const bodyData = new URLSearchParams({
+                name: nameFound,
+                battery: batteryFound,
+                rssi: rssiFound,
+                station_id: station_id,
+                device_id: mac_id
+            });
+            fetch("https://bbs.ugavel.com/discovered", {
+                    body: bodyData,
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/x-www-form-urlencoded"
+                    }
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json(); // assuming the response is in JSON format
+                    })
+                    .then(data => {
+                        // Handle the response data here
+                        console.log(data);
+                    })
             connection.write(1);
         }).catch(function(error) {
             console.log(1, 'ERROR: ' + error);
