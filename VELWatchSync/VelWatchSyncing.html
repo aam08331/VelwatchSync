@@ -6,53 +6,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syncing Page</title>
     <style>
-       body {
-            background-color: #ecf0f1; /* Light background color for the page */
-        }
+      .container {
+  display: flex;
+  justify-content: space-between; /* Add space between the boxes */
+  margin: 20px; /* Add margin around the container */
+}
 
-        .footer {
-            left: -8px;
-            background-color: #3498db; /* Blue color */
-            padding: 20px;
-            position: fixed;
-            bottom: 0;
-            width: 99%;
-            text-align: center;
-        }
+.box {
+  height: 50px; /* Adjust the height as needed */
+  border: 1px solid black; /* Add a thin black border */
+  border-radius: 10px; /* Add rounded corners */
+  background-color: white; /* Set background color to white */
+  box-sizing: border-box; /* Include border and padding in the box's total width and height */
+  flex: 1; /* Let the boxes take equal space */
+  margin: 0 10px; /* Add space between the boxes */
+}
 
-        .buttons-container {
-            display: flex;
-            justify-content: space-between; /* Space buttons across the whole page */
-            margin-top: 10px;
-        }
+.large-box {
+  flex: 4; /* Make this box four times wider */
+}
 
-        .button {
-            padding: 15px 30px; /* Increase button size */
-            background-color: #2c3e50; /* Darker blue for buttons */
-            color: #fff;
-            text-decoration: none;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
+.small-box {
+  flex: 1;
+}
 
-        .uga-logo {
-            display: block;
-            margin: 20px auto; /* Center the logo horizontally */
-            max-width: 20%; /* Make the logo smaller */
-        }
+.centered-text {
+  text-align: center;
+  line-height: 50px;
+  margin: 0;
+}
+.body-box {
+  width: 60%; /* Adjust width as needed */
+  margin: 20px auto; /* Center the box horizontally */
+  padding: 20px; /* Add padding inside the box */
+  border: 1px solid black; /* Add border around the box */
+  border-radius: 10px; /* Add rounded corners */
+  background-color: white; /* Set background color to white */
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+}
+.buttonss {
+    flex: 1;
+    height: 50px; /* Adjust the height as needed */
+  border: 1px solid black; /* Add a thin black border */
+  border-radius: 10px; /* Add rounded corners */
+  background-color: white; /* Set background color to white */
+  box-sizing: border-box; /* Include border and padding in the box's total width and height */
+  flex: 1; /* Let the boxes take equal space */
+  margin: 0 10px; /* Add space between the boxes */
+}
+.buttons {
+  width: 80%; /* Adjust width as needed */
+  height: 50px; /* Adjust height as needed */
+  border: 1px solid black; /* Add a thin black border */
+  border-radius: 10px; /* Add rounded corners */
+  background-color: white; /* Set background color to white */
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  margin: 10px 0; /* Add margin between elements */
+}
+
+button {
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+p {
+  margin: 10px 0; /* Add margin between headers */
+}
+
     </style>
 </head>
 <body>
-    <img id="uga-logo" src="GEORGIA.png" alt="University of Georgia Logo" width="100%" height="100%">
-<div class="footer">
-<div class="buttons-container">
-    <button onclick="start()" class="button">Sync Now</button>
-    <button onclick="download()" class="button">Download New</button>
-    <button class="button">Button 3</button>
-    <button onclick="sendReq()" class="button">Send Req</button>
-</div>
-</div>
+    <div class="container">
+        <div class="box large-box">
+          <p class="centered-text"><b>ID: </b></p>
+        </div>
+            <button class="buttonss"><b>Logout</b></button>
+      </div>
+      <div id="holder">
+    </div>
 </body>
+<script>
+    const participants = [
+    { name: "Participant 1", lastSyncTime: "10:00 AM" },
+    { name: "Participant 2", lastSyncTime: "11:30 AM" },
+    { name: "Participant 3", lastSyncTime: "12:45 PM" }
+  ];
+  
+  // Container to hold dynamically generated elements
+  const container = document.getElementById("holder");
+  
+  // Iterate through the participants array
+  for (let i = 0; i < participants.length; i++) {
+    // Create body-box div
+    const bodyBox = document.createElement("div");
+    bodyBox.classList.add("body-box");
+  
+    // Create participant paragraph
+    const participantPara = document.createElement("p");
+    participantPara.innerHTML = `<b>Participant:</b> ${participants[i].name}`;
+  
+    // Create last sync time paragraph
+    const lastSyncTimePara = document.createElement("p");
+    lastSyncTimePara.innerHTML = `<b>Last Sync Time:</b> ${participants[i].lastSyncTime}`;
+  
+    // Create Sync Now button
+    const syncNowBtn = document.createElement("button");
+    syncNowBtn.classList.add("buttons");
+    syncNowBtn.innerHTML = "<b>Sync Now</b>";
+  
+    // Create Take Survey button
+    const takeSurveyBtn = document.createElement("button");
+    takeSurveyBtn.classList.add("buttons");
+    takeSurveyBtn.innerHTML = "<b>Take Survey</b>";
+  
+    // Append elements to bodyBox
+    bodyBox.appendChild(participantPara);
+    bodyBox.appendChild(lastSyncTimePara);
+    bodyBox.appendChild(syncNowBtn);
+    bodyBox.appendChild(takeSurveyBtn);
+  
+    // Append bodyBox to container
+    container.appendChild(bodyBox);
+  }
+</script>
 </html>

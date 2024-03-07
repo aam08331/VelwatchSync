@@ -165,7 +165,7 @@ var WebBluetooth = {
                 mac_id = device.id;
                 mac_id = mac_id.toString();
                 nameFound = device.name;
-                console.log(device.advertisement)
+                console.log(device.getAdvertisingData());
             console.log(1, 'Device Name:       ' + nameFound);
             console.log(1, 'Device ID:         ' + mac_id);
             console.log(1, 'Device battery:         ' + batteryFound);
