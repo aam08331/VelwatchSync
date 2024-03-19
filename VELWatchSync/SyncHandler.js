@@ -165,11 +165,16 @@ var WebBluetooth = {
                 mac_id = device.id;
                 mac_id = mac_id.toString();
                 nameFound = device.name;
-                console.log(device.getAdvertisingData());
             console.log(1, 'Device Name:       ' + nameFound);
             console.log(1, 'Device ID:         ' + mac_id);
-            console.log(1, 'Device battery:         ' + batteryFound);
-            console.log(1, 'Device rssi:         ' + rssiFound);
+            device.addEventListener("advertisementreceived", (event) => {
+                console.log("Advertisement received. Device Name: " + event.device.name);
+                console.log(event);
+          
+                event.serviceData.forEach((valueDataView, key) => {
+                  console.log(`Service (${key}) data: ${valueDataView.getUint8()}`);
+                });
+              });
             //Calls the close function in the event of a gatt server disconnection
             device.addEventListener('gattserverdisconnected', function() {
                 console.log(1, "Disconnected (gattserverdisconnected)");
